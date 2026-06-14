@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eye Style Gallery</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; }
+      body {
+        background: radial-gradient(circle at 50% 20%, #161b2b, #06070b 70%);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: #d6dcea; padding: 34px 20px 60px;
+      }
+      h1 { font-size: 22px; font-weight: 650; text-align: center; margin: 0 0 4px; }
+      .sub { text-align: center; opacity: .55; font-size: 13px; margin-bottom: 32px; }
+      .grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; max-width: 1000px; margin: 0 auto; }
+      @media (max-width: 880px) { .grid { grid-template-columns: repeat(2,1fr); } }
+      @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+      .card { background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 20px 18px 16px; position: relative; }
+      .stage { width: 100%; aspect-ratio: 5/3; display: grid; place-items: center; margin-bottom: 12px; }
+      .eyes { width: 100%; height: 100%; overflow: visible; }
+      .eye { transform-box: fill-box; transform-origin: center; }
+      .pupil { transition: transform .12s ease-out; }
+      .meta { display: flex; align-items: baseline; justify-content: space-between; }
+      .meta .name { font-size: 15px; font-weight: 600; }
+      .meta .insp { font-size: 11px; opacity: .5; }
+      .num { position: absolute; top: 12px; left: 14px; font-size: 12px; opacity: .35; }
+      a.back { position: fixed; top: 16px; left: 18px; font-size: 12px; color: #7fb0ff; opacity: .7; text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <a class="back" href="/">← persona</a>
+    <h1>Style reference gallery</h1>
+    <div class="sub">Look references only — the live persona uses the Gel base · they blink + follow cursor</div>
+    <div class="grid" id="grid"></div>
+    <script type="module" src="/demo/gallery.ts"></script>
+  </body>
+</html>

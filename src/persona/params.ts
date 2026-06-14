@@ -27,6 +27,9 @@ export interface EyeParams {
   lowerLidBend: number;
   // pupil / catchlight size
   pupil: number;
+  // pupil focus: how strongly both pupils converge toward the center (nose).
+  // High = locked-on / intense / doe-eyed; 0 = relaxed parallel gaze.
+  converge: number;
   // eyebrow: vertical raise (px), slant (deg, + = inner-down/angry), arch bend
   browY: number;
   browAngle: number;
@@ -39,7 +42,7 @@ export const NEUTRAL: EyeParams = {
   rTL: 0.55, rTR: 0.55, rBR: 0.55, rBL: 0.55,
   upperLid: 0.08, upperLidAngle: 0, upperLidBend: 0,
   lowerLid: 0.05, lowerLidAngle: 0, lowerLidBend: 0,
-  pupil: 1,
+  pupil: 1, converge: 0,
   browY: 2, browAngle: 0, browBend: 0.5,
 };
 

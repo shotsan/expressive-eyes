@@ -152,10 +152,19 @@ export class Persona {
     const gx = clamp(this.gazeX.value + this.sacX, -1.2, 1.2);
     const gy = clamp(this.gazeY.value + this.sacY, -1.2, 1.2);
     const br = 1 + Math.sin(this.breathe * 1.1) * 0.012;
-    const apply = (p: EyeParams): EyeParams => ({
-      ...p, offsetX: p.offsetX + gx, offsetY: p.offsetY + gy,
-      scaleX: p.scaleX * br, scaleY: p.scaleY * br,
-    });
-    drawFace(this.ctx, this.W, this.H, apply(l), apply(r), this.skin, this.col, this.blink);
+    // dynamic focus: pupils converge on the viewer when gaze is centered,
+    // and relax to parallel when looking away.
+    const focus = 0.22 * (1 - Math.min(1, Math.hypot(gx, gy)));
+    // side = -1 left eye, +1 right eye; converge pulls each pupil toward center
+    const apply = (p: EyeParams, side: number): EyeParams => {
+      const c = clamp(p.converge + focus, -0.3, 0.6);
+      return {
+        ...p,
+        offsetX: p.offsetX + gx - side * c,
+        offsetY: p.offsetY + gy,
+        scaleX: p.scaleX * br, scaleY: p.scaleY * br,
+      };
+    };
+    drawFace(this.ctx, this.W, this.H, apply(l, -1), apply(r, 1), this.skin, this.col, this.blink);
   };
 }

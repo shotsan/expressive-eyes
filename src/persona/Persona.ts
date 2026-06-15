@@ -80,6 +80,7 @@ export class Persona {
   get emotions() { return EMOTIONS.map((e) => e.id); }
   get skinId() { return this.skin.id; }
   followCursor(on: boolean) { this.cursor = on; if (!on) { this.gazeX.set(0); this.gazeY.set(0); } return this; }
+  doBlink() { this.blinking = true; this.blinkPhase = 0; return this; }
   /** Drive gaze externally (e.g. from face tracking). Call followCursor(false) first. */
   setGaze(nx: number, ny: number) { this.gazeX.set(clamp(nx, -1.2, 1.2)); this.gazeY.set(clamp(ny, -1.2, 1.2)); return this; }
   setAutonomic(on: boolean) { this.autonomic = on; return this; }

@@ -55,10 +55,14 @@ camBtn.onclick = async () => {
   camMsg.textContent = "loading face model…";
   try {
     personas.forEach((p) => p.followCursor(false));
-    tracker = new FaceTracker(video, (nx, ny, present) => {
-      if (present) personas.forEach((p) => p.setGaze(nx, ny));
-      camMsg.textContent = present ? "tracking your face 👀" : "looking for a face…";
-    });
+    tracker = new FaceTracker(
+      video,
+      (nx, ny, present) => {
+        if (present) personas.forEach((p) => p.setGaze(nx, ny));
+        camMsg.textContent = present ? "tracking your face 👀" : "looking for a face…";
+      },
+      () => personas.forEach((p) => p.doBlink()) // real blink triggers eye blink
+    );
     await tracker.start();
     video.classList.add("on");
     camBtn.textContent = "■ Stop camera";

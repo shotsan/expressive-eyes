@@ -37,6 +37,7 @@ export class Persona {
 
   private blink = 0; private blinkT = 1.2; private blinking = false; private blinkPhase = 0;
   private sacT = 1; private sacX = 0; private sacY = 0; private breathe = 0;
+  private gazeGain = 1; // ramps 0->1 after an emotion change (pupils re-engage)
   autonomic: boolean;
 
   private last = 0; private raf = 0; private disposed = false;
@@ -65,6 +66,15 @@ export class Persona {
     this.right.set(mirror(merge(e.base, e.right ?? {})));
     this.colTarget = this.colorsFor(id);
     this.current = id;
+    // Center the pupils at the moment of change so the new expression reads
+    // clearly, then let gaze/convergence/emotion-bias ease back in.
+    for (const sp of [this.left, this.right]) {
+      sp.springs.offsetX.value = 0; sp.springs.offsetX.velocity = 0;
+      sp.springs.offsetY.value = 0; sp.springs.offsetY.velocity = 0;
+    }
+    this.gazeX.reset(0); this.gazeY.reset(0);
+    this.sacX = 0; this.sacY = 0; this.sacT = 0.9;
+    this.gazeGain = 0;
     return this;
   }
   get emotions() { return EMOTIONS.map((e) => e.id); }
@@ -149,15 +159,19 @@ export class Persona {
 
     const l = this.left.update(dt);
     const r = this.right.update(dt);
-    const gx = clamp(this.gazeX.value + this.sacX, -1.2, 1.2);
-    const gy = clamp(this.gazeY.value + this.sacY, -1.2, 1.2);
+    // after an emotion change, gaze + convergence ramp back from 0 (pupils
+    // start centered so the new expression is legible)
+    this.gazeGain = Math.min(1, this.gazeGain + dt / 0.45);
+    const g = this.gazeGain;
+    const gx = clamp((this.gazeX.value + this.sacX) * g, -1.2, 1.2);
+    const gy = clamp((this.gazeY.value + this.sacY) * g, -1.2, 1.2);
     const br = 1 + Math.sin(this.breathe * 1.1) * 0.012;
     // dynamic focus: pupils converge on the viewer when gaze is centered,
     // and relax to parallel when looking away.
     const focus = 0.22 * (1 - Math.min(1, Math.hypot(gx, gy)));
     // side = -1 left eye, +1 right eye; converge pulls each pupil toward center
     const apply = (p: EyeParams, side: number): EyeParams => {
-      const c = clamp(p.converge + focus, -0.3, 0.6);
+      const c = clamp((p.converge + focus) * g, -0.3, 0.6);
       return {
         ...p,
         offsetX: p.offsetX + gx - side * c,
